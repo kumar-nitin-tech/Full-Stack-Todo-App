@@ -1,6 +1,11 @@
 const { default: mongoose } = require("mongoose");
 
 const todoSchema = new mongoose.Schema({
+    userId : {
+        type : mongoose.Schema.ObjectId,
+        ref : "user",
+        required: true
+    },
     title : {
         type : String,
         required : true
@@ -14,14 +19,9 @@ const todoSchema = new mongoose.Schema({
         type : Boolean,
         required : false,
         default : false
-    },
-    user : {
-        type : mongoose.Schema.ObjectId,
-        ref : "User",
-        required: true
     }
 }, {
     timestamps : true
 });
 
-module.exports = mongoose.model("todo", todoSchema);
+module.exports = mongoose.model("todos", todoSchema);

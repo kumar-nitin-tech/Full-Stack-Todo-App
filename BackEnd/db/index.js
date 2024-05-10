@@ -1,13 +1,13 @@
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 
-const mongoDbConnect = async()=>{
+const mongoDbConnect = async() => {
     try{
-        await mongoose.connect('mongodb+srv://nitinkumar:dLEkH8JKfaMrmXTv@todo.yizieu0.mongodb.net');
-        console.log('Mongodb is connected')
-    }catch(err){
-        console.log(err);
+        const connectionInstance = await mongoose.connect(process.env.MONGODB_URI);
+        console.log(`\n MongoDb is connected with host ${connectionInstance.connection.host}`);
+    }catch(error){
+        console.error("MongoDB connection is failed", error);
         process.exit(1);
     }
-};
+}
 
-module.exports = {mongoDbConnect};
+module.exports = mongoDbConnect;

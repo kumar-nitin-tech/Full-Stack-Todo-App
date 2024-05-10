@@ -1,17 +1,8 @@
-const z = require("zod");
-const user = require("../models/user")
-function validateInput(obj){
-    const validateSchema = z.object({
-        username: z.string(),
-        email: z.string().email(),
-        password: z.string()
-    });
-    const response = validateSchema.safeParse(obj);
-    console.log(response);
-    return response;
-}
+const user = require("../models/user");
+const StatusCode = require("../utils/constants");
+const jsonGenerate = require("../utils/helper");
 
-const userMiddleware = async(req, res, next) =>{
+const authMiddleware = (req, res, next) =>{
     //validate if user exists or not 
     const {email, password} = req.body;
     const validateUser = user.findOne({
@@ -19,9 +10,10 @@ const userMiddleware = async(req, res, next) =>{
         password : password
     });
     if(!validateUser){
-        res.json({
-            msg : "Email or password is invalid"
-        });
+        res.json(jsonGenerate(
+            StatusCode.AUTH_ERROR,
+            "Invalid User",
+        ))
     }
     else{
         next();
@@ -29,4 +21,4 @@ const userMiddleware = async(req, res, next) =>{
 }
 
 
-module.exports = {validateInput, userMiddleware};
+module.exports = authMiddleware;

@@ -16,7 +16,13 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type : Date,
         default : Date.now()
-    }
+    },
+    todos: [
+        {
+            type : mongoose.Schema.ObjectId,
+            ref : "todos",
+        }
+    ]
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("user", userSchema);
