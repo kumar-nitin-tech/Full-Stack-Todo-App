@@ -1,22 +1,29 @@
 const user = require("../models/user");
-const StatusCode = require("../utils/constants");
 const jsonGenerate = require("../utils/helper");
 
-const authMiddleware = (req, res, next) =>{
+const authMiddleware = async(req, res, next) =>{
     //validate if user exists or not 
     const {email, password} = req.body;
-    const validateUser = user.findOne({
-        email : email,
-        password : password
-    });
+    const validateUser = await user.findOne({
+        email : email})
+    console.log(validateUser.password);
     if(!validateUser){
-        res.json(jsonGenerate(
-            StatusCode.AUTH_ERROR,
-            "Invalid User",
+        res.status(404).json(jsonGenerate(
+            "error",
+            {
+                error : "User doesn't exists" 
+            }
         ))
     }
-    else{
+    if(validateUser.password == password){
         next();
+    }else{
+        res.status(401).json(jsonGenerate(
+            "error",
+            {
+                error: "Incorrect Password"
+            }
+        ))
     }
 }
 

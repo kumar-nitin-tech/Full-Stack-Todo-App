@@ -1,7 +1,6 @@
 const  z  = require("zod");
 const todo = require("../models/todo");
 const user = require("../models/user");
-const StatusCode = require("../utils/constants");
 const jsonGenerate = require("../utils/helper");
 
 //We take todo id to find the todo in user id 
@@ -11,7 +10,6 @@ const markTodo = async(req, res)=>{
     const validate = booleanSchema.safeParse(req.body.completed);
     if(!validate.success){
         return res.json(jsonGenerate(
-            StatusCode.VALIDATION_ERROR,
             "Enter the valid input"
         ))
     }else{
@@ -30,16 +28,19 @@ const markTodo = async(req, res)=>{
                 ]
             );
             if(todo != null){
-                res.json(jsonGenerate(
-                    StatusCode.SUCCESS,
-                    "Task Completed"
+                res.status(200).json(jsonGenerate(
+                    "Success",
+                    {
+                        msg : "Task Completed"
+                    }
                 ))
             }
         }catch(err){
-            res.json(jsonGenerate(
-                StatusCode.UNPROCESSABLE_ENTITY,
-                "Task is not updated !!",
-                null
+            res.status(400).json(jsonGenerate(
+                "Error",
+                {
+                    error: "ask is not updated !!"
+                }
             ))
         }
     }

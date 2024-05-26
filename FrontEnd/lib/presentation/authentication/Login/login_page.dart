@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/presentation/authentication/sign_up_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_app/data/model/auth/login_model.dart';
+import 'package:todo_app/presentation/authentication/Login/login_viewmodel.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,6 +12,34 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  bool _isNotValid = false;
+
+  void _login() async{
+    if(emailController.text.isNotEmpty && passwordController.text.isNotEmpty){
+      var loginModel = LoginModel(
+          email: emailController.text,
+          password: passwordController.text
+      );
+      final navigator = Navigator.of(context);
+      final prefs = await SharedPreferences.getInstance();
+      final token = await LoginViewModel().loginToken(loginModel);
+      print(token);
+      if(token != null){
+        final tokenCheck = prefs.getString("token");
+        if(tokenCheck == token) {
+          navigator.popAndPushNamed("todoScreen");
+        }else{
+          Fluttertoast.showToast(msg: token.toString(),toastLength:Toast.LENGTH_SHORT,timeInSecForIosWeb: 1);
+        }
+      }else{
+        Fluttertoast.showToast(msg: "Unexpected error occurred", toastLength:Toast.LENGTH_SHORT, timeInSecForIosWeb: 1);
+      }
+    }else{
+      _isNotValid = true;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,12 +69,14 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(12)
                   ),
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 20.0),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
                     child: TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Email',
+                          errorText: (_isNotValid)? "Enter the password": null
                       ),
                     ),
                   ),
@@ -58,13 +91,15 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(12)
                   ),
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 20.0),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
                     child: TextField(
+                      controller: passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Password',
+                          errorText: (_isNotValid)? "Enter the password": null
                       ),
 
                     ),
@@ -79,6 +114,9 @@ class _LoginPageState extends State<LoginPage> {
               Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: GestureDetector(
+                  onTap: (){
+                    _login();
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(20.0),
                     decoration: BoxDecoration(

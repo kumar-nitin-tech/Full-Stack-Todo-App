@@ -1,6 +1,5 @@
 const todo = require("../models/todo");
 const user = require("../models/user");
-const StatusCode = require("../utils/constants");
 const jsonGenerate = require("../utils/helper");
 
 //We take todo id to find the todo in user id 
@@ -24,14 +23,17 @@ const deleteTodo = async(req, res)=>{
             );
         }
         res.json(jsonGenerate(
-            StatusCode.SUCCESS,
-            "Task is deleted successfully"
+            "success",
+            {
+                msg: "Task is deleted successfully"
+            }
         ))
     }catch(err){
         res.json(jsonGenerate(
-            StatusCode.UNPROCESSABLE_ENTITY,
-            "Task is not updated !!",
-            null
+            "Error",
+            {
+                error: "Task is not updated"
+            }
         ))
     }
 }
